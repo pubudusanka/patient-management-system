@@ -6,7 +6,8 @@ Content-Type: application/json
   "name": "Khan Ameer",
   "email": "ameer@example.com",
   "address": "123, main street",
-  "dateOfBirth": "1995-09-09"
+  "dateOfBirth": "1995-09-09",
+  "registeredDate": "2024-10-15"
 }
 
 ###
