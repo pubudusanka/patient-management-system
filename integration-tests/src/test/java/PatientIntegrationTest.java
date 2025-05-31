@@ -6,19 +6,15 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class AuthIntegrationTest {
+public class PatientIntegrationTest {
 
     @BeforeAll
-    static void setUp() {
+    static void setUp(){
         RestAssured.baseURI = "http://localhost:4004";
     }
 
     @Test
-    public void shouldReturnedOkWithValidToken() {
-        // 1.Arrange
-        // 2.Act
-        // 3.Assert
-
+    public void shouldReturnPatientsWithValidToken () {
         String loginPayload = """
                 {
                     "email": "testuser@test.com",
@@ -26,7 +22,7 @@ public class AuthIntegrationTest {
                 }
             """;
 
-        Response response = given()
+        String token = given()
                 .contentType("application/json")
                 .body(loginPayload)
                 .post("/auth/login")
@@ -34,30 +30,16 @@ public class AuthIntegrationTest {
                 .statusCode(200)
                 .body("token", notNullValue())
                 .extract()
-                .response();
-
-        System.out.println("Generated Token: "+ response.jsonPath().getString("token"));
-    }
-
-    @Test
-    public void shouldReturnedUnauthorizedOnInValidLogin() {
-        // 1.Arrange
-        // 2.Act
-        // 3.Assert
-
-        String loginPayload = """
-                {
-                    "email": "invalid_user@test.com",
-                    "password": "wrongpassword"
-                }
-            """;
+                .jsonPath()
+                .get("token");
 
         given()
-                .contentType("application/json")
-                .body(loginPayload)
-                .post("/auth/login")
+                .header("Authorization", "Bearer " + token)
+                .when()
+                .get("/api/patients")
                 .then()
-                .statusCode(401);
-
+                .statusCode(200)
+                .body("patients", notNullValue());
     }
 }
+
